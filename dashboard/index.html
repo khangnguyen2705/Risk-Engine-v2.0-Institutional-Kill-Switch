@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Engine v2.0 — Kill Switch Dashboard</title>
+    <meta name="description" content="Institutional-grade Risk Engine monitoring dashboard with Kill Switch, regime detection, and anomaly scoring.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <header class="header" id="header">
+            <div class="header-left">
+                <div class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <div>
+                        <h1>Risk Engine <span class="version">v2.0</span></h1>
+                        <p class="subtitle">Institutional Kill Switch Dashboard</p>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-chip" id="connectionStatus">
+                    <span class="dot dot-green"></span>
+                    <span>Connected</span>
+                </div>
+                <div class="clock" id="clock">--:--:--</div>
+            </div>
+        </header>
+
+        <!-- Top metrics row -->
+        <section class="metrics-row" id="metricsRow">
+            <div class="metric-card" id="navCard">
+                <div class="metric-label">Net Asset Value</div>
+                <div class="metric-value" id="navValue">$10,000,000</div>
+                <div class="metric-change" id="navChange">+0.00%</div>
+            </div>
+            <div class="metric-card" id="drawdownCard">
+                <div class="metric-label">Drawdown</div>
+                <div class="metric-value" id="drawdownValue">0.00%</div>
+                <div class="metric-sub" id="drawdownLimit">Limit: 15.0%</div>
+            </div>
+            <div class="metric-card" id="regimeCard">
+                <div class="metric-label">Market Regime</div>
+                <div class="metric-value regime-value" id="regimeValue">🟢 CALM</div>
+                <div class="metric-sub" id="volValue">Vol: 0.0%</div>
+            </div>
+            <div class="metric-card" id="tradesCard">
+                <div class="metric-label">Trades</div>
+                <div class="metric-value" id="tradesValue">0</div>
+                <div class="metric-sub" id="anomalyInfo">Anomaly: warmup</div>
+            </div>
+        </section>
+
+        <!-- Kill Switch Section -->
+        <section class="kill-switch-section" id="killSwitchSection">
+            <div class="kill-switch-container" id="killSwitchContainer">
+                <div class="kill-switch-indicator" id="killSwitchIndicator">
+                    <div class="kill-switch-ring" id="killSwitchRing"></div>
+                    <div class="kill-switch-core" id="killSwitchCore">
+                        <span class="kill-switch-icon" id="killSwitchIcon">🛡️</span>
+                    </div>
+                </div>
+                <div class="kill-switch-info">
+                    <div class="kill-switch-state" id="killSwitchState">ARMED</div>
+                    <div class="kill-switch-detail" id="killSwitchDetail">All systems nominal</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main content grid -->
+        <section class="content-grid">
+            <!-- Order Flow Table -->
+            <div class="panel order-panel" id="orderPanel">
+                <div class="panel-header">
+                    <h2>📋 Order Flow</h2>
+                    <span class="badge" id="orderCount">0</span>
+                </div>
+                <div class="table-wrapper">
+                    <table id="orderTable">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>ID</th>
+                                <th>Side</th>
+                                <th>Qty</th>
+                                <th>Notional</th>
+                                <th>Z-Score</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Event Timeline -->
+            <div class="panel events-panel" id="eventsPanel">
+                <div class="panel-header">
+                    <h2>📜 Event Timeline</h2>
+                </div>
+                <div class="events-list" id="eventsList">
+                    <div class="event-item event-info">
+                        <span class="event-time">--:--:--</span>
+                        <span class="event-msg">Waiting for engine data...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Risk Gauges -->
+        <section class="gauges-row" id="gaugesRow">
+            <div class="gauge-card">
+                <canvas id="drawdownGauge" width="160" height="100"></canvas>
+                <div class="gauge-label">Drawdown %</div>
+            </div>
+            <div class="gauge-card">
+                <canvas id="anomalyGauge" width="160" height="100"></canvas>
+                <div class="gauge-label">Anomaly Z-Score</div>
+            </div>
+            <div class="gauge-card">
+                <canvas id="volGauge" width="160" height="100"></canvas>
+                <div class="gauge-label">Volatility %</div>
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

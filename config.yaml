@@ -1,0 +1,67 @@
+# ============================================================================
+# Risk Engine v2.0 — Institutional Configuration
+# All magic numbers in one auditable file.
+# ============================================================================
+
+portfolio:
+  starting_capital: 10_000_000      # $10M
+  currency: USD
+
+risk_limits:
+  # Static thresholds
+  max_notional: 10_000_000          # $10M per order
+  max_quantity: 100_000             # 100K shares per order
+  max_concentration_pct: 25.0       # 25% NAV in one name
+  max_velocity_per_sec: 50          # 50 orders/sec
+  daily_loss_limit_pct: 5.0         # 5% of starting NAV
+
+  # Max drawdown (base — regime detector may tighten)
+  max_drawdown_pct: 15.0            # 15% from HWM
+
+anomaly:
+  window_size: 100                  # Rolling window of last N orders
+  warmup_orders: 10                 # Need this many before adaptive mode
+  z_score_threshold: 4.0            # 4σ = anomalous
+
+regime:
+  vol_window: 20                    # 20-bar rolling vol
+  annualization_factor: 98280       # 252 days × 390 min/day (minute-level)
+  thresholds:
+    calm_max_vol: 0.15              # < 15% ann. vol
+    elevated_max_vol: 0.30          # 15-30% ann. vol
+    # > 30% = crisis
+  overrides:
+    calm:
+      max_drawdown_pct: 15.0
+      position_size_mult: 1.0
+    elevated:
+      max_drawdown_pct: 10.0
+      position_size_mult: 0.5
+    crisis:
+      max_drawdown_pct: 8.0
+      position_size_mult: 0.25
+
+liquidity:
+  book_levels: 5                    # 5-level order book
+  base_spread_bps: 5.0              # 5bps base spread
+  base_depth_per_level: 50_000      # $50K per level
+  max_slippage_pct: 2.0             # 2% max slippage
+  max_book_depth_ratio_pct: 30.0    # 30% of 5-level depth
+  kyle_lambda_warn_bps: 50.0        # 50bps warning
+
+simulation:
+  symbol: "SP500_Futures"
+  normal_trades_before_fat_finger: 12
+  fat_finger_notional: 1_000_000_000  # $1 BILLION
+  tick_delay_ms: 50                    # 50ms between ticks
+  trades_per_tick: 1                   # 1 trade signal per N ticks
+  trade_frequency: 5                   # Generate trade every N ticks
+
+kill_switch:
+  auto_flatten: true
+  cooldown_seconds: 60
+  admin_key: "OVERRIDE-2026"
+
+dashboard:
+  port: 8765
+  poll_interval_ms: 200

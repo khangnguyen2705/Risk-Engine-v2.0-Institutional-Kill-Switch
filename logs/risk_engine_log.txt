@@ -1,0 +1,120 @@
+================================================================================
+RISK ENGINE v2.0 — INSTITUTIONAL KILL SWITCH DEMO
+Adaptive Anomaly Detection | Regime-Aware Limits | Liquidity Impact Estimation
+Started: 2026-05-15T11:41:28.644+09:00
+================================================================================
+[11:41:28.645] [INFO ] ENGINE         | Capital: $10,000,000 | Max DD: 15.0% | Symbol: SP500_Futures
+[11:41:28.645] [INFO ] KILL_SWITCH    | State: ARMED
+[11:41:28.645] [INFO ] ANOMALY_DET    | Warmup mode (need 10 orders for baseline)
+[11:41:28.645] [INFO ] REGIME_DET     | Vol: 0.0% ann. | Regime: 🟢 CALM
+[11:41:28.645] [INFO ] LIQUIDITY      | Book levels: 5 | Base depth/level: $50,000.00
+
+━━━ PHASE 1: Normal Trading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[11:41:28.645] [INFO ] AI_AUDITOR     | Running 12 normal trades to establish baseline
+[11:41:28.649] [PASS ] ORDER ORD-0001 | SELL 168 SP500_Futures @ $297.91 | $50,048.88
+                                          Anomaly z=0.0 | Impact=0.03% | DD=0.00% | Regime 🟢
+[11:41:28.687] [PASS ] ORDER ORD-0002 | SELL 168 SP500_Futures @ $297.57 | $49,991.76
+                                          Anomaly z=0.0 | Impact=0.02% | DD=0.00% | Regime 🟢
+[11:41:28.723] [PASS ] ORDER ORD-0003 | SELL 169 SP500_Futures @ $296.08 | $50,037.52
+                                          Anomaly z=0.0 | Impact=0.03% | DD=0.00% | Regime 🟢
+[11:41:28.757] [PASS ] ORDER ORD-0004 | SELL 169 SP500_Futures @ $295.88 | $50,003.72
+                                          Anomaly z=0.0 | Impact=0.02% | DD=0.00% | Regime 🟢
+[11:41:28.788] [PASS ] ORDER ORD-0005 | SELL 169 SP500_Futures @ $295.52 | $49,942.88
+                                          Anomaly z=0.0 | Impact=0.02% | DD=0.00% | Regime 🟢
+[11:41:28.822] [PASS ] ORDER ORD-0006 | SELL 170 SP500_Futures @ $294.80 | $50,116.00
+                                          Anomaly z=0.0 | Impact=0.03% | DD=0.00% | Regime 🟢
+[11:41:28.853] [PASS ] ORDER ORD-0007 | SELL 170 SP500_Futures @ $294.52 | $50,068.40
+                                          Anomaly z=0.0 | Impact=0.03% | DD=0.00% | Regime 🟢
+[11:41:28.889] [PASS ] ORDER ORD-0008 | SELL 170 SP500_Futures @ $294.11 | $49,998.70
+                                          Anomaly z=0.0 | Impact=0.03% | DD=0.00% | Regime 🟢
+[11:41:28.919] [PASS ] ORDER ORD-0009 | SELL 170 SP500_Futures @ $293.34 | $49,867.80
+                                          Anomaly z=0.0 | Impact=0.02% | DD=0.00% | Regime 🟢
+[11:41:28.953] [PASS ] ORDER ORD-0010 | SELL 171 SP500_Futures @ $291.83 | $49,902.93
+                                          Anomaly z=0.0 | Impact=0.02% | DD=0.00% | Regime 🟢
+[11:41:28.988] [PASS ] ORDER ORD-0011 | SELL 172 SP500_Futures @ $290.22 | $49,917.84
+                                          Anomaly z=2.8 | Impact=0.03% | DD=0.00% | Regime 🟢
+[11:41:29.020] [PASS ] ORDER ORD-0012 | SELL 174 SP500_Futures @ $288.05 | $50,120.70
+                                          Anomaly z=3.8 | Impact=0.03% | DD=0.00% | Regime 🟢
+[11:41:29.052] [INFO ] PHASE_1        | Complete — 12 trades executed, all PASSED
+[11:41:29.052] [INFO ] PORTFOLIO      | NAV: $10,012,395 | DD: 0.00% | Anomaly baseline: 12 orders
+
+━━━ PHASE 2: FAT FINGER INJECTION — $1,000,000,000 BUY ━━━━━━━━━━━━━━━━━━━━━━
+
+[11:41:29.052] [WARN ] AI_AUDITOR     | Injecting Fat Finger scenario: $1,000,000,000 BUY
+[11:41:29.052] [REJECT] ORDER ORD-0013 | BUY 3,471,499 SP500_Futures @ $288.06 | $1,000,000,002
+                                          ✗ fat_finger_notional: $1,000,000,001.94 > $10,000,000.00 limit
+                                          ✗ fat_finger_quantity: 3,471,499 > 100,000 limit
+                                          ✗ anomaly_z_score: z=12779377.9 (threshold: 4.0)
+                                          ✗ market_impact: slippage=100.07% > 2.0% limit
+                                          ✗ book_depth: ratio=250000.0% > 30.0% limit
+                                          ✗ position_concentration: 9993.5% > 25.0% NAV limit
+[11:41:29.052] [FATAL] KILL_SWITCH    | ██ TRIGGERED ██ | ARMED → TRIGGERED → HALTED
+[11:41:29.052] [FATAL] KILL_SWITCH    | ALL TRADING HALTED — manual override required
+
+━━━ Trade Rejected ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Timestamp:  2026-05-15T11:41:29.052+09:00
+Order:      BUY 3,471,499 SP500_Futures @ $288.06
+Notional:   $1,000,000,002
+Rules Hit:  6 of 10 (fat_finger_notional, fat_finger_quantity, anomaly_z_score, market_impact, book_depth, position_concentration)
+Anomaly:    z-score = 12779377.9 (3194844σ from trader's baseline)
+Impact:     Would consume 250000.0% of visible book depth
+Action:     REJECTED → KILL SWITCH ACTIVATED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━ PHASE 3: Post-Kill Switch Verification ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[11:41:29.053] [INFO ] AI_AUDITOR     | Verifying all orders are blocked after Kill Switch activation
+[11:41:29.053] [REJECT] ORDER ORD-POST-1 | BUY 100 SP500_Futures @ $288.03 | $28,803.00
+                                          ✗ kill_switch_active: System HALTED — all orders blocked
+[11:41:29.077] [REJECT] ORDER ORD-POST-2 | BUY 100 SP500_Futures @ $288.05 | $28,805.00
+                                          ✗ kill_switch_active: System HALTED — all orders blocked
+[11:41:29.102] [REJECT] ORDER ORD-POST-3 | BUY 100 SP500_Futures @ $287.95 | $28,795.00
+                                          ✗ kill_switch_active: System HALTED — all orders blocked
+[11:41:29.127] [INFO ] PHASE_3        | ✓ Confirmed: Kill Switch blocks ALL orders post-activation
+
+━━━ PHASE 4: Manual Reset + Drawdown Cascade (Crisis Regime) ━━━━━━━━━━━━━━━━
+
+[11:41:29.127] [INFO ] KILL_SWITCH    | Manual reset: HALTED → ARMED
+[11:41:29.127] [INFO ] AI_AUDITOR     | Fast-forwarding into 1987 crash to trigger regime transition...
+[11:41:29.146] [INFO ] REGIME_DET     | Vol: 65.8% ann. | Regime: 🔴 CRISIS
+[11:41:29.147] [INFO ] ENGINE         | Limits adjusted: Max DD 15.0% → 8.0%
+[11:41:29.147] [INFO ] AI_AUDITOR     | Injecting losing trades to test drawdown circuit breaker...
+[11:41:29.147] [INFO ] LOSS-01        | Simulated loss: -$150,185.93 | NAV: $9,862,209 | DD: 1.50%
+                                          ⚠ anomaly_z_score: z=280.73 (threshold: 4.0)
+[11:41:29.179] [INFO ] LOSS-02        | Simulated loss: -$150,185.93 | NAV: $9,712,023 | DD: 3.00%
+                                          ⚠ anomaly_z_score: z=281.79 (threshold: 4.0)
+[11:41:29.210] [INFO ] LOSS-03        | Simulated loss: -$150,185.93 | NAV: $9,561,837 | DD: 4.50%
+                                          ⚠ anomaly_z_score: z=281.73 (threshold: 4.0)
+[11:41:29.240] [INFO ] LOSS-04        | Simulated loss: -$150,185.93 | NAV: $9,411,651 | DD: 6.00%
+[11:41:29.241] [FATAL] KILL_SWITCH    | ██ TRIGGERED ██ | Rules: anomaly_z_score, daily_loss
+[11:41:29.241] [FATAL] KILL_SWITCH    | ALL TRADING HALTED — risk limit circuit breaker activated
+
+━━━ Kill Switch — Risk Breach ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Timestamp:  2026-05-15T11:41:29.241+09:00
+NAV:        $9,411,651
+Drawdown:   6.00% (limit: 8.0%)
+Daily P&L:  -5.88% (limit: 5.0%)
+  ✗ anomaly_z_score: z=281.17 (threshold: 4.0)
+  ✗ daily_loss: -5.88% > 5.00% limit
+Regime:     🔴 CRISIS
+Action:     KILL SWITCH ACTIVATED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━ SIMULATION COMPLETE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Total orders submitted:    20
+Orders passed:             12
+Orders rejected:           8
+Kill Switch activations:   2
+  • Activation 1:          Fat Finger — $1,000,000,000 order
+  • Activation 2:          Drawdown breach — 6.0%
+Final NAV:                 $9,411,651 (-5.9%)
+Regime at halt:            🔴 CRISIS
+Anomaly detector orders:   12
+
+================================================================================
+Kill Switch Status: 🔴 HALTED
+Log saved to: logs/risk_engine_log.txt
+Finished: 2026-05-15T11:41:29.241+09:00
+================================================================================

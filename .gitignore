@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+*.egg-info/
+1987_crash_market_data.csv
