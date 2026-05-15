@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  risk-engine:
+    build: .
+    container_name: risk-engine-prod
+    environment:
+      - RISK_ADMIN_KEY=${RISK_ADMIN_KEY}
+      - CONFIG_PATH=/app/config.production.yaml
+      - LOG_LEVEL=INFO
+    ports:
+      - "8765:8765"   # Dashboard
+      - "9090:9090"   # Prometheus metrics
+    volumes:
+      - risk-data:/var/lib/risk-engine
+      - ./data:/app/data:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8765/api/state"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./infra/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - risk-engine
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - ./infra/grafana-dashboards:/etc/grafana/provisioning/dashboards
+    depends_on:
+      - prometheus
+
+volumes:
+  risk-data:

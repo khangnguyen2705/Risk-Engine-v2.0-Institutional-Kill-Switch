@@ -1,0 +1,80 @@
+# ============================================================================
+# Risk Engine v2.0 — PRODUCTION Configuration
+# ⚠️ DO NOT commit to public repositories
+# ============================================================================
+
+portfolio:
+  starting_capital: 50_000_000      # $50M production capital
+  currency: USD
+
+risk_limits:
+  max_notional: 5_000_000           # $5M per order (tighter than demo)
+  max_quantity: 50_000              # 50K shares (tighter)
+  max_concentration_pct: 15.0       # 15% NAV (tighter)
+  max_velocity_per_sec: 100         # 100 orders/sec
+  daily_loss_limit_pct: 3.0         # 3% daily stop (tighter)
+  max_drawdown_pct: 10.0            # 10% from HWM (tighter)
+
+anomaly:
+  window_size: 500                  # Larger rolling window
+  warmup_orders: 50                 # More warmup for stability
+  z_score_threshold: 3.5            # 3.5σ (more sensitive)
+
+regime:
+  vol_window: 50                    # 50-bar rolling vol (smoother)
+  annualization_factor: 98280
+  thresholds:
+    calm_max_vol: 0.12              # Tighter vol bands
+    elevated_max_vol: 0.25
+  overrides:
+    calm:
+      max_drawdown_pct: 10.0
+      position_size_mult: 1.0
+    elevated:
+      max_drawdown_pct: 6.0
+      position_size_mult: 0.4
+    crisis:
+      max_drawdown_pct: 4.0         # 4% DD in crisis = halt
+      position_size_mult: 0.15
+
+liquidity:
+  book_levels: 10                   # 10-level book (deeper)
+  base_spread_bps: 3.0              # 3bps (tighter spread)
+  base_depth_per_level: 200_000     # $200K per level
+  max_slippage_pct: 1.0             # 1% max slippage (tighter)
+  max_book_depth_ratio_pct: 15.0    # 15% depth ratio (tighter)
+  kyle_lambda_warn_bps: 25.0
+
+simulation:
+  symbol: "SP500_Futures"
+  normal_trades_before_fat_finger: 50
+  fat_finger_notional: 1_000_000_000
+  tick_delay_ms: 10
+  trades_per_tick: 1
+  trade_frequency: 3
+
+kill_switch:
+  auto_flatten: true
+  cooldown_seconds: 300             # 5-minute cooldown
+  admin_key: "${RISK_ADMIN_KEY}"    # From environment variable
+  require_2fa: true
+  notification_channels:
+    - slack:#risk-alerts
+    - pagerduty:critical
+
+dashboard:
+  port: 8765
+  poll_interval_ms: 100
+
+# Production-only settings
+deployment:
+  exchange_gateway: "fix://prod-gateway:9876"
+  max_reconnect_attempts: 5
+  heartbeat_interval_ms: 500
+  persistence:
+    engine: sqlite
+    path: "/var/lib/risk-engine/state.db"
+    checkpoint_interval_sec: 30
+  monitoring:
+    prometheus_port: 9090
+    latency_histogram_buckets: [10, 50, 100, 500, 1000, 5000]
